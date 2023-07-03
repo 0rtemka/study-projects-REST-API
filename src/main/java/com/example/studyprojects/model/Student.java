@@ -1,6 +1,10 @@
 package com.example.studyprojects.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,12 +24,17 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int student_id;
 
+    @NotBlank(message = "Name should not be empty")
     @Column(name = "name")
     private String name;
 
+    @NotBlank(message = "Email should not be empty")
+    @Email(regexp = "stud[0-9]{8}@study\\.ru", message = "Invalid email. Format = 'studXXXXXXXX@study.ru'")
     @Column(name = "email")
     private String email;
 
+    @Max(value = 100, message = "Mark can not be greater than 100")
+    @Min(value = 0, message = "Mark can not be below 0")
     @Column(name = "mark")
     private int mark;
 
