@@ -36,6 +36,7 @@ public class StudentsService {
                 .name(studentDto.getName())
                 .email(studentDto.getEmail())
                 .mark(studentDto.getMark())
+                .group(studentDto.getGroup())
                 .build();
     }
 
@@ -44,6 +45,7 @@ public class StudentsService {
 
         student.setName(studentDto.getName());
         student.setEmail(studentDto.getEmail());
+        student.setGroup(studentDto.getGroup());
         student.setMark(studentDto.getMark());
 
         studentsRepository.save(student);

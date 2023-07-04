@@ -38,6 +38,10 @@ public class Student {
     @Column(name = "mark")
     private int mark;
 
+    @Column(name = "group_id")
+    @Enumerated(EnumType.STRING)
+    private Group group;
+
     @ManyToMany
     @JoinTable(
             name = "Student_Project",

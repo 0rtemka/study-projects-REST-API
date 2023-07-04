@@ -1,5 +1,6 @@
 package com.example.studyprojects.dto;
 
+import com.example.studyprojects.model.Group;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class StudentDto {
     private String name;
     private String email;
+    private Group group;
     private int mark;
 }
