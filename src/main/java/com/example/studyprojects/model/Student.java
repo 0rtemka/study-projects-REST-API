@@ -28,7 +28,6 @@ public class Student {
     @Column(name = "name")
     private String name;
 
-    @NotBlank(message = "Email should not be empty")
     @Email(regexp = "stud[0-9]{8}@study\\.ru", message = "Invalid email. Format = 'studXXXXXXXX@study.ru'")
     @Column(name = "email")
     private String email;
