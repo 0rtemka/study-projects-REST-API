@@ -21,8 +21,7 @@ public class StudentsService {
 
     public Student findStudentById(int id) {
         return studentsRepository.findById(id).orElseThrow(
-                () -> {throw new NotFoundException("Student with id = " + id  + " not found");
-                });
+                () -> new NotFoundException("Student with id = " + id + " not found"));
     }
 
     public void createStudent(StudentDto student) {
@@ -40,8 +39,8 @@ public class StudentsService {
                 .build();
     }
 
-    public StudentDto editStudent(StudentDto studentDto, int id) {
-        Student student = checkStudent(id);
+    public Student editStudent(StudentDto studentDto, int id) {
+        Student student = checkAndGetStudent(id);
 
         student.setName(studentDto.getName());
         student.setEmail(studentDto.getEmail());
@@ -49,17 +48,18 @@ public class StudentsService {
         student.setMark(studentDto.getMark());
 
         studentsRepository.save(student);
-        return studentDto;
+        return student;
     }
 
     public void deleteStudent(int id) {
-        Student student = checkStudent(id);
+        Student student = checkAndGetStudent(id);
         studentsRepository.delete(student);
     }
 
-    private Student checkStudent(int id) {
+    private Student checkAndGetStudent(int id) {
         Optional<Student> studToEdit = studentsRepository.findById(id);
-        if (studToEdit.isEmpty()) throw new NotFoundException("Student with id = " + id + " not found");
-        return studToEdit.get();
+        return studToEdit.orElseThrow(
+                () -> new NotFoundException("Student with id = " + id + " not found")
+        );
     }
 }

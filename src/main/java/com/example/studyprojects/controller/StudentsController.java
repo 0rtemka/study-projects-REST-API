@@ -6,15 +6,9 @@ import com.example.studyprojects.service.StudentsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
@@ -40,7 +34,7 @@ public class StudentsController {
     }
 
     @PutMapping("/{id}")
-    public StudentDto editStudent(@PathVariable int id,
+    public Student editStudent(@PathVariable int id,
                                   @Valid @RequestBody StudentDto student)
     {
         return studentsService.editStudent(student, id);

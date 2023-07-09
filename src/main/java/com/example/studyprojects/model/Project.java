@@ -23,6 +23,9 @@ public class Project {
     @Column(name = "takenAt")
     private LocalDateTime takenAt;
 
+    @Column(name = "rejectedAt")
+    private LocalDateTime rejectedAt;
+
     @Column(name = "mark")
     private int mark;
 

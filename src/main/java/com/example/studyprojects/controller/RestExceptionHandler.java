@@ -26,6 +26,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> notFoundHandler(RuntimeException e, WebRequest r) {
         MainErrorResponseEntity response = MainErrorResponseEntity.builder()
                 .message(e.getMessage()).build();
+
         mapToErrorResponseEntity(response, HttpStatus.NOT_FOUND, r);
 
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(404));
@@ -35,6 +36,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(ConstraintViolationException e, WebRequest r)  {
         Map<String, String> errors = new HashMap<>();
+
         e.getConstraintViolations().forEach((error) -> {
             String fieldName = error.getPropertyPath().toString();
             String errorMessage = error.getMessage();
