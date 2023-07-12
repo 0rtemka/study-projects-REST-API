@@ -3,6 +3,7 @@ package com.example.studyprojects.controller;
 import com.example.studyprojects.dto.ProjectThemeDto;
 import com.example.studyprojects.model.ProjectTheme;
 import com.example.studyprojects.service.ProjectThemesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,13 @@ public class ProjectThemesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTheme(@RequestBody ProjectThemeDto theme) {
+    public void addTheme(@Valid @RequestBody ProjectThemeDto theme) {
         service.addTheme(theme);
     }
 
     @GetMapping
-    public List<ProjectTheme> findAllProjects() {
-        return service.findAllProjects();
+    public List<ProjectTheme> findAllThemes() {
+        return service.findAllThemes();
     }
 
     @GetMapping("/{group}")
@@ -32,8 +33,13 @@ public class ProjectThemesController {
         return service.findThemesByGroup(group);
     }
 
+    @GetMapping("/id/{id}")
+    public ProjectTheme findThemeById(@PathVariable int id) {
+        return service.findThemeById(id);
+    }
+
     @PutMapping("/{id}")
-    public ProjectTheme editTheme(@PathVariable int id, @RequestBody ProjectThemeDto theme) {
+    public ProjectTheme editTheme(@PathVariable int id, @Valid @RequestBody ProjectThemeDto theme) {
         return service.editTheme(theme, id);
     }
 

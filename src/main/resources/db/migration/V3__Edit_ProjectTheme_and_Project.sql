@@ -1,5 +1,5 @@
-alter table project_db.public.project_theme
+alter table project_theme
 add column added_at timestamp(6);
 
-alter table project_db.public.project
+alter table project
 add column rejected_at timestamp(6);

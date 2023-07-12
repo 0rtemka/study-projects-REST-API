@@ -1,9 +1,6 @@
 package com.example.studyprojects.controller;
 
-import com.example.studyprojects.utils.ErrorResponseEntity;
-import com.example.studyprojects.utils.MainErrorResponseEntity;
-import com.example.studyprojects.utils.NotFoundException;
-import com.example.studyprojects.utils.ValidationErrorResponseEntity;
+import com.example.studyprojects.utils.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -21,15 +18,15 @@ import java.util.Map;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected ResponseEntity<Object> notFoundHandler(RuntimeException e, WebRequest r) {
+    @ExceptionHandler({NotFoundException.class, ValidationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> mainHandler(RuntimeException e, WebRequest r) {
         MainErrorResponseEntity response = MainErrorResponseEntity.builder()
                 .message(e.getMessage()).build();
 
-        mapToErrorResponseEntity(response, HttpStatus.NOT_FOUND, r);
+        mapToErrorResponseEntity(response, HttpStatus.BAD_REQUEST, r);
 
-        return new ResponseEntity<>(response, HttpStatusCode.valueOf(404));
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(400));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -53,6 +50,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private void mapToErrorResponseEntity(ErrorResponseEntity entity, HttpStatus status, WebRequest r) {
         entity.setTimestamp(LocalDateTime.now());
         entity.setStatus(status);
-        entity.setPath(((ServletWebRequest)r).getRequest().getRequestURI().toString());
+        entity.setPath(((ServletWebRequest)r).getRequest().getRequestURI());
     }
 }

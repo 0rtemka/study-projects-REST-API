@@ -55,12 +55,12 @@ public class StudentsControllerTests {
     }
 
     @Test
-    public void findStudentByIdTest_InvalidId_NOT_FOUND() throws Exception {
+    public void findStudentByIdTest_InvalidId_BAD_REQUEST() throws Exception {
         this.mockMvc.perform(get("http://localhost:8080/api/students/4"))
                 .andDo(print())
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Student with id = 4 not found")))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
                 .andExpect(jsonPath("$.path", is("/api/students/4")));
     }
 
@@ -166,7 +166,7 @@ public class StudentsControllerTests {
     }
 
     @Test
-    public void editStudentTest_InvalidId_NOT_FOUND() throws Exception {
+    public void editStudentTest_InvalidId_BAD_REQUEST() throws Exception {
         Student stud = Student.builder()
                 .name("Elizabeth").email("stud00002907@study.ru").mark(67).group(Group.ISAS).build();
 
@@ -174,9 +174,9 @@ public class StudentsControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(stud)))
                 .andDo(print())
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Student with id = 4 not found")))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
                 .andExpect(jsonPath("$.path", is("/api/students/4")));
     }
 }
