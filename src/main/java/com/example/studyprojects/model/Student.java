@@ -1,14 +1,8 @@
 package com.example.studyprojects.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,14 +26,26 @@ public class Student {
     @Column(name = "email")
     private String email;
 
+    @NotBlank(message = "Password can not be blank")
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Max(value = 100, message = "Mark can not be greater than 100")
     @Min(value = 0, message = "Mark can not be below 0")
     @Column(name = "mark")
     private int mark;
 
+    @NotNull(message = "Group can not be null")
     @Column(name = "group_id")
     @Enumerated(EnumType.STRING)
     private Group group;
+
+    @Column(name = "is_active")
+    private boolean active;
 
     @ManyToMany
     @JoinTable(
@@ -48,4 +54,9 @@ public class Student {
             inverseJoinColumns = { @JoinColumn(name = "project_id") }
     )
     private Set<Project> projects = new HashSet<>();
+
+    @ToString.Include(name = "password")
+    private String maskPassword() {
+        return "********";
+    }
 }

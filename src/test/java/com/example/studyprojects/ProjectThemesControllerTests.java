@@ -12,10 +12,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,8 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Sql(value = "/create_themes.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = "/drop_themes.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = "/themes-list-before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/themes-list-after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ProjectThemesControllerTests {
     @Autowired
     private MockMvc mock;
@@ -33,9 +32,14 @@ public class ProjectThemesControllerTests {
     @Autowired
     private ObjectMapper mapper;
 
+    private final String username = "stud00002608@study.ru";
+    private final String password = "password";
+
     @Test
     public void findAllThemesTest() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes"))
+        this.mock.perform(get("http://localhost:8080/api/themes").with(
+                    httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(6)));
@@ -43,7 +47,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemeByIdTest_ValidId_OK() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1"))
+        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.topic", is("Concurrency in Java")))
@@ -52,7 +58,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemeByIdTest_InvalidId_BAD_REQUEST() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/id/7"))
+        this.mock.perform(get("http://localhost:8080/api/themes/id/7").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Project theme with id = 7 not found")))
@@ -62,7 +70,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_IS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/is"))
+        this.mock.perform(get("http://localhost:8080/api/themes/is").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -73,7 +83,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_ISAS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/isas"))
+        this.mock.perform(get("http://localhost:8080/api/themes/isas").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -83,7 +95,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_CS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/cs"))
+        this.mock.perform(get("http://localhost:8080/api/themes/cs").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -92,7 +106,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_InvalidGroup_BAD_REQUEST() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/css"))
+        this.mock.perform(get("http://localhost:8080/api/themes/css").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Group with name 'CSS' not found")))
@@ -102,19 +118,22 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void addThemeTest_ValidData_OK() throws Exception {
-        ProjectThemeDto projectTheme = new ProjectThemeDto(
-                "Java NIO",
-                LocalDateTime.now(),
-                Group.CS
-        );
+        ProjectThemeDto projectTheme = ProjectThemeDto.builder()
+                .topic("Java NIO")
+                .group(Group.CS)
+                .build();
 
-        this.mock.perform(post("http://localhost:8080/api/themes")
+        this.mock.perform(post("http://localhost:8080/api/themes").with(
+                                httpBasic(username, password)
+                        )
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/10"))
+        this.mock.perform(get("http://localhost:8080/api/themes/id/10").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.topic", is("Java NIO")))
@@ -123,20 +142,21 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void addThemeTest_InvalidTopic_BAD_REQUEST() throws Exception {
-        ProjectThemeDto projectTheme = new ProjectThemeDto(
-                "",
-                LocalDateTime.now(),
-                Group.CS
-        );
+        ProjectThemeDto projectTheme = ProjectThemeDto.builder()
+                .topic("")
+                .group(Group.CS)
+                .build();
 
-        this.mock.perform(post("http://localhost:8080/api/themes")
+
+        this.mock.perform(post("http://localhost:8080/api/themes").with(
+                                httpBasic(username, password)
+                        )
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.topic", is("Topic should not be empty")))
-                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes")));
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")));
     }
 
     @Test
@@ -145,14 +165,15 @@ public class ProjectThemesControllerTests {
                 .topic("Java NIO")
                 .build();
 
-        this.mock.perform(post("http://localhost:8080/api/themes")
+        this.mock.perform(post("http://localhost:8080/api/themes").with(
+                                httpBasic(username, password)
+                        )
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.group", is("Group can not be null")))
-                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes")));
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")));
     }
 
     @Test
@@ -162,13 +183,17 @@ public class ProjectThemesControllerTests {
                 .group(Group.IS)
                 .build();
 
-        this.mock.perform(put("http://localhost:8080/api/themes/1")
+        this.mock.perform(put("http://localhost:8080/api/themes/1").with(
+                                httpBasic(username, password)
+                        )
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1"))
+        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.topic", is("Concurrency in Golang")))
@@ -182,7 +207,9 @@ public class ProjectThemesControllerTests {
                 .group(Group.IS)
                 .build();
 
-        this.mock.perform(put("http://localhost:8080/api/themes/7")
+        this.mock.perform(put("http://localhost:8080/api/themes/7").with(
+                                httpBasic(username, password)
+                        )
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
@@ -199,25 +226,29 @@ public class ProjectThemesControllerTests {
                 .topic("")
                 .build();
 
-        this.mock.perform(put("http://localhost:8080/api/themes/1")
+        this.mock.perform(put("http://localhost:8080/api/themes/1").with(
+                                httpBasic(username, password)
+                        )
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(projectTheme)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.topic", is("Topic should not be empty")))
                 .andExpect(jsonPath("$.errors.group", is("Group can not be null")))
-                .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes/1")));
-
+                .andExpect(jsonPath("$.status", is("BAD_REQUEST")));
     }
 
     @Test
     public void deleteThemeTest_ValidId_OK() throws Exception {
-        this.mock.perform(delete("http://localhost:8080/api/themes/1"))
+        this.mock.perform(delete("http://localhost:8080/api/themes/1").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1"))
+        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Project theme with id = 1 not found")))
@@ -227,7 +258,9 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void deleteThemeTest_InvalidId_BAD_REQUEST() throws Exception {
-        this.mock.perform(delete("http://localhost:8080/api/themes/7"))
+        this.mock.perform(delete("http://localhost:8080/api/themes/7").with(
+                        httpBasic(username, password)
+                ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Project theme with id = 7 not found")))

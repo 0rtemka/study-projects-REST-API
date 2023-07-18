@@ -1,45 +1,53 @@
 package com.example.studyprojects.service;
 
 import com.example.studyprojects.dto.StudentDto;
+import com.example.studyprojects.mapper.StudentMapper;
+import com.example.studyprojects.model.Role;
 import com.example.studyprojects.model.Student;
 import com.example.studyprojects.repository.StudentsRepository;
 import com.example.studyprojects.utils.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class StudentsService {
+
     private final StudentsRepository studentsRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final StudentMapper mapper;
 
-    public List<Student> findAllStudents() {
-        return studentsRepository.findAll();
+    public List<StudentDto> findAllStudents() {
+        return studentsRepository.findAll().stream()
+                .map(mapper::map)
+                .toList();
     }
 
-    public Student findStudentById(int id) {
-        return studentsRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Student with id = " + id + " not found"));
-    }
-
-    public void createStudent(StudentDto student) {
-        studentsRepository.save(
-                mapFromDto(student)
+    public StudentDto findStudentById(int id) {
+        return mapper.map(studentsRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Student with id = " + id + " not found"))
         );
     }
 
-    private Student mapFromDto(StudentDto studentDto) {
-        return Student.builder()
-                .name(studentDto.getName())
-                .email(studentDto.getEmail())
-                .mark(studentDto.getMark())
-                .group(studentDto.getGroup())
-                .build();
+    public Student findStudentByEmail(String email) {
+        return studentsRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("User with email " + email + " not found")
+        );
     }
 
-    public Student editStudent(StudentDto studentDto, int id) {
+    public StudentDto createStudent(StudentDto student) {
+        student.setPassword(passwordEncoder.encode(student.getPassword()));
+        return mapper.map(studentsRepository.save(
+                mapper.map(student)
+        ));
+    }
+
+    public StudentDto editStudent(StudentDto studentDto, int id) {
         Student student = checkAndGetStudent(id);
 
         student.setName(studentDto.getName());
@@ -47,8 +55,7 @@ public class StudentsService {
         student.setGroup(studentDto.getGroup());
         student.setMark(studentDto.getMark());
 
-        studentsRepository.save(student);
-        return student;
+        return mapper.map(studentsRepository.save(student));
     }
 
     public void deleteStudent(int id) {
@@ -60,6 +67,20 @@ public class StudentsService {
         Optional<Student> studToEdit = studentsRepository.findById(id);
         return studToEdit.orElseThrow(
                 () -> new NotFoundException("Student with id = " + id + " not found")
+        );
+    }
+
+    public StudentDto registerStudent(StudentDto studentDto) {
+        Student student = mapper.map(studentDto);
+
+        return mapper.map(
+                studentsRepository.save(student.toBuilder()
+                        .password(passwordEncoder.encode(student.getPassword()))
+                        .active(true)
+                        .role(Role.USER)
+                        .mark(0)
+                        .projects(new HashSet<>())
+                .build())
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.example.studyprojects.service;
 
 import com.example.studyprojects.dto.ProjectThemeDto;
+import com.example.studyprojects.mapper.ProjectThemeMapper;
 import com.example.studyprojects.model.Group;
 import com.example.studyprojects.model.ProjectTheme;
 import com.example.studyprojects.repository.ProjectThemesRepository;
@@ -16,27 +17,35 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProjectThemesService {
+
     private final ProjectThemesRepository repository;
+    private final ProjectThemeMapper mapper;
 
-    public void addTheme(ProjectThemeDto theme) {
+    public ProjectThemeDto addTheme(ProjectThemeDto theme) {
         validate(theme);
-        repository.save(mapFromDto(theme));
+        theme.setAddedAt(LocalDateTime.now());
+        return mapper.map(repository.save(mapper.map(theme)));
     }
 
-    public List<ProjectTheme> findAllThemes() {
-        return repository.findAll();
+    public List<ProjectThemeDto> findAllThemes() {
+        return repository.findAll().stream()
+                .map(mapper::map)
+                .toList();
     }
 
-    public List<ProjectTheme> findThemesByGroup(String group) {
+    public List<ProjectThemeDto> findThemesByGroup(String group) {
         Group groupToFind = checkAndGetGroup(group);
-        return repository.findProjectThemesByGroup(groupToFind);
+        return repository.findProjectThemesByGroup(groupToFind)
+                .stream()
+                .map(mapper::map)
+                .toList();
     }
 
-    public ProjectTheme findThemeById(int id) {
-        return checkAndGetTheme(id);
+    public ProjectThemeDto findThemeById(int id) {
+        return mapper.map(checkAndGetTheme(id));
     }
 
-    public ProjectTheme editTheme(ProjectThemeDto theme, int id) {
+    public ProjectThemeDto editTheme(ProjectThemeDto theme, int id) {
         validate(theme);
         ProjectTheme themeToEdit = checkAndGetTheme(id);
 
@@ -45,7 +54,7 @@ public class ProjectThemesService {
         themeToEdit.setAddedAt(LocalDateTime.now());
 
         repository.save(themeToEdit);
-        return themeToEdit;
+        return theme;
     }
 
     public void deleteTheme(int id) {
@@ -79,21 +88,5 @@ public class ProjectThemesService {
             throw new ValidationException(
                     "Theme '" + theme.getTopic() + "' already exists in " + theme.getGroup() + " group"
             );
-    }
-
-    private ProjectTheme mapFromDto(ProjectThemeDto themeDto) {
-        return ProjectTheme.builder()
-                .topic(themeDto.getTopic())
-                .addedAt(themeDto.getAddedAt() == null ? LocalDateTime.now() : themeDto.getAddedAt())
-                .group(themeDto.getGroup())
-                .build();
-    }
-
-    private ProjectThemeDto mapToDto(ProjectTheme theme) {
-        return ProjectThemeDto.builder()
-                .topic(theme.getTopic())
-                .addedAt(theme.getAddedAt() == null ? LocalDateTime.now() : theme.getAddedAt())
-                .group(theme.getGroup())
-                .build();
     }
 }
