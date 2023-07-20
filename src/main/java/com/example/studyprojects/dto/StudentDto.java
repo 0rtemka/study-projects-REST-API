@@ -3,6 +3,7 @@ package com.example.studyprojects.dto;
 import com.example.studyprojects.model.Group;
 import com.example.studyprojects.model.Project;
 import com.example.studyprojects.model.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -33,5 +34,6 @@ public class StudentDto {
     @Max(value = 100, message = "Mark can not be greater than 100")
     @Min(value = 0, message = "Mark can not be below 0")
     private int mark;
+    @JsonIgnore
     private Set<Project> projects = new HashSet<>();
 }

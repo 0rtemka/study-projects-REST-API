@@ -1,6 +1,7 @@
 package com.example.studyprojects.controller;
 
 import com.example.studyprojects.dto.ProjectThemeDto;
+import com.example.studyprojects.mapper.ProjectThemeMapper;
 import com.example.studyprojects.service.ProjectThemesService;
 import com.example.studyprojects.utils.ApiError;
 import jakarta.validation.Valid;
@@ -19,23 +20,28 @@ import java.util.List;
 public class ProjectThemesController {
 
     private final ProjectThemesService service;
+    private final ProjectThemeMapper mapper;
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
     @GetMapping
     public List<ProjectThemeDto> findAllThemes() {
-        return service.findAllThemes();
+        return service.findAllThemes().stream()
+                .map(mapper::map)
+                .toList();
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
     @GetMapping("/{group}")
     public List<ProjectThemeDto> findThemesByGroup(@PathVariable String group) {
-        return service.findThemesByGroup(group);
+        return service.findThemesByGroup(group).stream()
+                .map(mapper::map)
+                .toList();
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
     @GetMapping("/id/{id}")
     public ProjectThemeDto findThemeById(@PathVariable int id) {
-        return service.findThemeById(id);
+        return mapper.map(service.findThemeById(id));
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_WRITE')")
@@ -44,7 +50,7 @@ public class ProjectThemesController {
     public ResponseEntity<Object> addTheme(@RequestBody @Valid ProjectThemeDto theme, Errors errors) {
         if (errors.hasErrors())
             return new ResponseEntity<>(new ApiError(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(service.addTheme(theme), HttpStatus.CREATED);
+        return new ResponseEntity<>(mapper.map(service.addTheme(theme)), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_WRITE')")
@@ -52,7 +58,7 @@ public class ProjectThemesController {
     public ResponseEntity<Object> editTheme(@PathVariable int id, @RequestBody @Valid ProjectThemeDto theme, Errors errors) {
         if (errors.hasErrors())
             return new ResponseEntity<>(new ApiError(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
-        return ResponseEntity.ok(service.editTheme(theme, id));
+        return ResponseEntity.ok(mapper.map(service.editTheme(theme, id)));
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_WRITE')")

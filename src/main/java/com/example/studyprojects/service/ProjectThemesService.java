@@ -21,31 +21,26 @@ public class ProjectThemesService {
     private final ProjectThemesRepository repository;
     private final ProjectThemeMapper mapper;
 
-    public ProjectThemeDto addTheme(ProjectThemeDto theme) {
+    public ProjectTheme addTheme(ProjectThemeDto theme) {
         validate(theme);
         theme.setAddedAt(LocalDateTime.now());
-        return mapper.map(repository.save(mapper.map(theme)));
+        return repository.save(mapper.map(theme));
     }
 
-    public List<ProjectThemeDto> findAllThemes() {
-        return repository.findAll().stream()
-                .map(mapper::map)
-                .toList();
+    public List<ProjectTheme> findAllThemes() {
+        return repository.findAll();
     }
 
-    public List<ProjectThemeDto> findThemesByGroup(String group) {
+    public List<ProjectTheme> findThemesByGroup(String group) {
         Group groupToFind = checkAndGetGroup(group);
-        return repository.findProjectThemesByGroup(groupToFind)
-                .stream()
-                .map(mapper::map)
-                .toList();
+        return repository.findProjectThemesByGroup(groupToFind);
     }
 
-    public ProjectThemeDto findThemeById(int id) {
-        return mapper.map(checkAndGetTheme(id));
+    public ProjectTheme findThemeById(int id) {
+        return checkAndGetTheme(id);
     }
 
-    public ProjectThemeDto editTheme(ProjectThemeDto theme, int id) {
+    public ProjectTheme editTheme(ProjectThemeDto theme, int id) {
         validate(theme);
         ProjectTheme themeToEdit = checkAndGetTheme(id);
 
@@ -53,8 +48,7 @@ public class ProjectThemesService {
         themeToEdit.setGroup(theme.getGroup());
         themeToEdit.setAddedAt(LocalDateTime.now());
 
-        repository.save(themeToEdit);
-        return theme;
+        return repository.save(themeToEdit);
     }
 
     public void deleteTheme(int id) {

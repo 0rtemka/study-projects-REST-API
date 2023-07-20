@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Student")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
@@ -47,7 +48,7 @@ public class Student {
     @Column(name = "is_active")
     private boolean active;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "Student_Project",
             joinColumns = { @JoinColumn(name = "student_id") },

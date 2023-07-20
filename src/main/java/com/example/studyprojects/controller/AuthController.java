@@ -1,6 +1,7 @@
 package com.example.studyprojects.controller;
 
 import com.example.studyprojects.dto.StudentDto;
+import com.example.studyprojects.mapper.StudentMapper;
 import com.example.studyprojects.service.StudentsService;
 import com.example.studyprojects.utils.ApiError;
 import jakarta.validation.Valid;
@@ -19,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final StudentsService studentsService;
+    private final StudentMapper mapper;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody @Valid StudentDto studentDto, Errors errors) {
         if (errors.hasErrors())
             return new ResponseEntity<>(new ApiError(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
-        return ResponseEntity.ok(studentsService.registerStudent(studentDto));
+        return ResponseEntity.ok(mapper.map(studentsService.registerStudent(studentDto)));
     }
 }
