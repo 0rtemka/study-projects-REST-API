@@ -3,6 +3,7 @@ package com.example.studyprojects.service;
 import com.example.studyprojects.dto.ProjectDto;
 import com.example.studyprojects.dto.StudentDto;
 import com.example.studyprojects.mapper.StudentMapper;
+import com.example.studyprojects.model.Group;
 import com.example.studyprojects.model.Project;
 import com.example.studyprojects.model.Role;
 import com.example.studyprojects.model.Student;
@@ -10,6 +11,9 @@ import com.example.studyprojects.repository.StudentsRepository;
 import com.example.studyprojects.utils.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +31,18 @@ public class StudentsService {
 
     public List<Student> findAllStudents() {
         return studentsRepository.findAll();
+    }
+
+    public List<Student> findAllStudentsSortAndPagination(String sortBy, int page, int size, String group) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
+
+        return switch (group.toLowerCase()) {
+            case ("all") -> studentsRepository.findAll(pageRequest).getContent();
+            case ("is") -> studentsRepository.findAllByGroup(Group.IS, pageRequest);
+            case ("isas") -> studentsRepository.findAllByGroup(Group.ISAS, pageRequest);
+            case ("cs") -> studentsRepository.findAllByGroup(Group.CS, pageRequest);
+            default -> throw new NotFoundException("Group '" + group + "' not found");
+        };
     }
 
     public Student findStudentById(int id) {

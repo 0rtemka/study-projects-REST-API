@@ -5,6 +5,8 @@ import com.example.studyprojects.model.Project;
 import com.example.studyprojects.model.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +20,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class StudentDto {
-    private int student_id;
+    private int studentId;
     @NotBlank(message = "Name should not be empty")
     private String name;
     @Email(regexp = "stud[0-9]{8}@study\\.ru", message = "Invalid email. Format = 'studXXXXXXXX@study.ru'")

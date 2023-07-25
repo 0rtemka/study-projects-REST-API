@@ -17,7 +17,7 @@ import java.util.Set;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int student_id;
+    private int studentId;
 
     @NotBlank(message = "Name should not be empty")
     @Column(name = "name")

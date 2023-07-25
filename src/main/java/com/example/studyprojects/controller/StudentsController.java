@@ -4,6 +4,7 @@ import com.example.studyprojects.dto.ProjectDto;
 import com.example.studyprojects.dto.StudentDto;
 import com.example.studyprojects.mapper.ProjectMapper;
 import com.example.studyprojects.mapper.StudentMapper;
+import com.example.studyprojects.model.Group;
 import com.example.studyprojects.service.StudentsService;
 import com.example.studyprojects.utils.ApiError;
 import jakarta.validation.Valid;
@@ -27,8 +28,13 @@ public class StudentsController {
 
     @PreAuthorize("hasAuthority('STUDENTS_READ')")
     @GetMapping
-    public List<StudentDto> findAllStudents() {
-        return studentsService.findAllStudents().stream()
+    public List<StudentDto> findAllStudents(
+            @RequestParam(name = "sortBy", required = false, defaultValue = "studentId") String sortBy,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(name = "group", required = false, defaultValue = "all") String group)
+    {
+        return studentsService.findAllStudentsSortAndPagination(sortBy, page, size, group).stream()
                 .map(studentMapper::map)
                 .toList();
     }
