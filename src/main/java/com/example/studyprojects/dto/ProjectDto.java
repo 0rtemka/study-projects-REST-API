@@ -1,5 +1,8 @@
 package com.example.studyprojects.dto;
 
+import com.example.studyprojects.model.Group;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -16,8 +19,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProjectDto {
-    private int project_id;
+    private int projectId;
     @NotBlank(message = "Topic should not be blank")
     private String topic;
     private LocalDateTime takenAt;
@@ -26,5 +30,6 @@ public class ProjectDto {
     @Max(value = 15, message = "Mark cannot be greater than 15")
     @NotBlank(message = "Mark cannot be blank")
     private int mark;
+    private Group groupId;
     private Set<StudentDto> group = new HashSet<>();
 }

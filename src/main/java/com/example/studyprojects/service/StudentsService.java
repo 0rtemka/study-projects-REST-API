@@ -100,7 +100,7 @@ public class StudentsService {
         );
 
         return student.getProjects().stream()
-                .filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now()) || p.getMark() != 0)
+                .filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now()) || p.getMark() != 0)
                 .toList();
 
     }

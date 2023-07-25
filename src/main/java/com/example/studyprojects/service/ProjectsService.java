@@ -31,7 +31,15 @@ public class ProjectsService {
         isGroupCorrect(projectTheme, student);
 
         Project project = projectsRepository.findByTopicAndExpiresAtAfter(projectTheme.getTopic(), LocalDateTime.now())
-                .orElse(generateProject(projectTheme.getTopic()));
+                .orElse(Project.builder()
+                        .topic(projectTheme.getTopic())
+                        .takenAt(LocalDateTime.now())
+                        .expiresAt(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))
+                        .mark(0)
+                        .groupId(projectTheme.getGroup())
+                        .group(new HashSet<>())
+                        .build()
+                );
 
         if (project.getGroup().size() == 3) {
             throw new TakeProjectException("Project " + project.getTopic() + " has maximum size of group (3 people)");
@@ -41,16 +49,6 @@ public class ProjectsService {
         student.getProjects().add(project);
 
         studentsService.save(student);
-    }
-
-    public Project generateProject(String topic) {
-        return Project.builder()
-                .topic(topic)
-                .takenAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))
-                .mark(0)
-                .group(new HashSet<>())
-                .build();
     }
 
     @Transactional(readOnly = true)

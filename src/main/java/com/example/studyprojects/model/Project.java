@@ -18,7 +18,7 @@ import java.util.Set;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int project_id;
+    private int projectId;
 
     @NotBlank(message = "Topic should not be blank")
     @Column(name = "topic")
@@ -32,6 +32,10 @@ public class Project {
 
     @Column(name = "mark")
     private int mark;
+
+    @Column(name = "group_id")
+    @Enumerated(EnumType.STRING)
+    private Group groupId;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "projects")
     private Set<Student> group = new HashSet<>();
