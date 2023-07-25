@@ -1,5 +1,6 @@
 package com.example.studyprojects.service;
 
+import com.example.studyprojects.model.Group;
 import com.example.studyprojects.model.Project;
 import com.example.studyprojects.model.ProjectTheme;
 import com.example.studyprojects.model.Student;
@@ -8,6 +9,8 @@ import com.example.studyprojects.utils.NotFoundException;
 import com.example.studyprojects.utils.TakeProjectException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,8 +62,28 @@ public class ProjectsService {
     }
 
     @Transactional(readOnly = true)
-    public List<Project> getAllProjects() {
-        return projectsRepository.findAll();
+    public List<Project> getAllProjects(String sortBy, String group, int page, int size, List<String> status) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
+        List<Project> projects = switch(group.toLowerCase()) {
+            case "all" -> projectsRepository.findAll(pageRequest).getContent();
+            case "is" -> projectsRepository.findAllByGroupId(Group.IS, pageRequest);
+            case "isas" -> projectsRepository.findAllByGroupId(Group.ISAS, pageRequest);
+            case "cs" -> projectsRepository.findAllByGroupId(Group.CS, pageRequest);
+            default -> throw new NotFoundException("Group with name '" + group.toUpperCase() + "' not found");
+        };
+
+        for (String filter : status) {
+            projects = switch (filter.toUpperCase()) {
+                case "ALL" -> projects;
+                case "MARKED" -> projects.stream().filter(p -> p.getMark() != 0).toList();
+                case "UNMARKED" -> projects.stream().filter(p -> p.getMark() == 0).toList();
+                case "ACTIVE" -> projects.stream().filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now())).toList();
+                case "INACTIVE" -> projects.stream().filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now())).toList();
+                default -> throw new NotFoundException("Illegal status: " + filter);
+            };
+        }
+
+        return projects;
     }
 
     @Transactional(readOnly = true)

@@ -29,8 +29,14 @@ public class ProjectsController {
     }
 
     @GetMapping
-    public List<ProjectDto> getAllProjects() {
-        return projectsService.getAllAvailableProjects().stream()
+    public List<ProjectDto> getAllProjects(
+            @RequestParam(name = "status", required = false, defaultValue = "all") List<String> status,
+            @RequestParam(name = "group", required = false, defaultValue = "all") String group,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "projectId") String sortBy,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size)
+    {
+        return projectsService.getAllProjects(sortBy, group, page, size, status).stream()
                 .map(mapper::map)
                 .toList();
     }
