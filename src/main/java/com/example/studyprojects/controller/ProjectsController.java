@@ -4,7 +4,6 @@ import com.example.studyprojects.dto.ProjectDto;
 import com.example.studyprojects.mapper.ProjectMapper;
 import com.example.studyprojects.security.StudentDetails;
 import com.example.studyprojects.service.ProjectsService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +23,14 @@ public class ProjectsController {
         projectsService.takeProject(themeId, student.student());
     }
 
+    @PutMapping("/{projectId}")
+    public void rateProject(@PathVariable int projectId, @RequestBody ProjectDto projectDto) {
+        projectsService.rateProject(projectDto.getMark(), projectId);
+    }
+
     @GetMapping
     public List<ProjectDto> getAllProjects() {
-        return projectsService.getAllProjects().stream()
+        return projectsService.getAllAvailableProjects().stream()
                 .map(mapper::map)
                 .toList();
     }
@@ -34,5 +38,10 @@ public class ProjectsController {
     @GetMapping("/{id}")
     public ProjectDto getProjectById(@PathVariable int id) {
         return mapper.map(projectsService.getProjectById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProject(@PathVariable int id) {
+        projectsService.deleteProject(id);
     }
 }

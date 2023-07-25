@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class ProjectTheme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int theme_id;
+    private int themeId;
 
     @NotBlank(message = "Topic should not be empty")
     @Column(name = "topic")
@@ -27,6 +27,9 @@ public class ProjectTheme {
 
     @Column(name = "addedAt")
     private LocalDateTime addedAt;
+
+    @Column(name = "is_available")
+    private boolean available;
 
     @NotNull(message = "Group can not be null")
     @Column(name = "group_id")

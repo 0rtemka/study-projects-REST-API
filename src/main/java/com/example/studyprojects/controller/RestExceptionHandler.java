@@ -29,7 +29,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({NotFoundException.class, ValidationException.class})
+    @ExceptionHandler({NotFoundException.class, ValidationException.class, TakeProjectException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> mainHandler(RuntimeException e, WebRequest r) {
         MainErrorResponseEntity response = MainErrorResponseEntity.builder()

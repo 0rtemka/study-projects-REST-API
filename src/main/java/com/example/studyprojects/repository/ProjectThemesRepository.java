@@ -9,5 +9,11 @@ import java.util.Optional;
 
 public interface ProjectThemesRepository extends JpaRepository<ProjectTheme, Integer> {
     List<ProjectTheme> findProjectThemesByGroup(Group group);
+
+    List<ProjectTheme> findProjectThemesByAvailableIsTrue();
+
     Optional<ProjectTheme> findProjectThemeByTopicAndGroup(String topic, Group group);
+
+    Optional<ProjectTheme> findByThemeIdAndAvailableIsTrue(int id);
+
 }

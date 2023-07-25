@@ -2,10 +2,7 @@ package com.example.studyprojects.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -17,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = "group")
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,15 +24,15 @@ public class Project {
     @Column(name = "topic")
     private String topic;
 
-    @Column(name = "takenAt")
+    @Column(name = "taken_at")
     private LocalDateTime takenAt;
 
-    @Column(name = "rejectedAt")
-    private LocalDateTime rejectedAt;
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
     @Column(name = "mark")
     private int mark;
 
-    @ManyToMany(mappedBy = "projects")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "projects")
     private Set<Student> group = new HashSet<>();
 }

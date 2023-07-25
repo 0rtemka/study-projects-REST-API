@@ -48,7 +48,7 @@ public class Student {
     @Column(name = "is_active")
     private boolean active;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     @JoinTable(
             name = "Student_Project",
             joinColumns = { @JoinColumn(name = "student_id") },

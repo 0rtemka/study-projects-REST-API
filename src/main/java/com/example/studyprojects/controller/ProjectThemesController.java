@@ -25,7 +25,7 @@ public class ProjectThemesController {
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
     @GetMapping
     public List<ProjectThemeDto> findAllThemes() {
-        return service.findAllThemes().stream()
+        return service.findAllAvailableThemes().stream()
                 .map(mapper::map)
                 .toList();
     }

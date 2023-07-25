@@ -1,6 +1,7 @@
 package com.example.studyprojects.dto;
 
-import com.example.studyprojects.model.Student;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,10 @@ public class ProjectDto {
     @NotBlank(message = "Topic should not be blank")
     private String topic;
     private LocalDateTime takenAt;
-    private LocalDateTime rejectedAt;
+    private LocalDateTime expiresAt;
+    @Min(value = 1, message = "Mark cannot be less than 1")
+    @Max(value = 15, message = "Mark cannot be greater than 15")
+    @NotBlank(message = "Mark cannot be blank")
     private int mark;
     private Set<StudentDto> group = new HashSet<>();
 }

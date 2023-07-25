@@ -24,6 +24,7 @@ public class ProjectThemesService {
     public ProjectTheme addTheme(ProjectThemeDto theme) {
         validate(theme);
         theme.setAddedAt(LocalDateTime.now());
+        theme.setAvailable(true);
         return repository.save(mapper.map(theme));
     }
 
@@ -31,13 +32,29 @@ public class ProjectThemesService {
         return repository.findAll();
     }
 
+    public List<ProjectTheme> findAllAvailableThemes() {
+        return repository.findProjectThemesByAvailableIsTrue();
+    }
+
     public List<ProjectTheme> findThemesByGroup(String group) {
         Group groupToFind = checkAndGetGroup(group);
         return repository.findProjectThemesByGroup(groupToFind);
     }
 
+    public ProjectTheme findThemeByTopicAndGroup(String topic, Group group) {
+        return repository.findProjectThemeByTopicAndGroup(topic, group).orElseThrow(
+                () -> new NotFoundException("Theme '" + topic + "' not found in " + group + " group")
+        );
+    }
+
     public ProjectTheme findThemeById(int id) {
         return checkAndGetTheme(id);
+    }
+
+    public ProjectTheme findAvailableThemeById(int id) {
+        return repository.findByThemeIdAndAvailableIsTrue(id).orElseThrow(
+                () -> new NotFoundException("Project theme with id = " + id + " not found")
+        );
     }
 
     public ProjectTheme editTheme(ProjectThemeDto theme, int id) {
@@ -49,6 +66,11 @@ public class ProjectThemesService {
         themeToEdit.setAddedAt(LocalDateTime.now());
 
         return repository.save(themeToEdit);
+    }
+
+    public void setThemeUnavailable(ProjectTheme theme) {
+        theme.setAvailable(false);
+        repository.save(theme);
     }
 
     public void deleteTheme(int id) {
