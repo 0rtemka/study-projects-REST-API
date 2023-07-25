@@ -8,6 +8,8 @@ import com.example.studyprojects.repository.ProjectThemesRepository;
 import com.example.studyprojects.utils.NotFoundException;
 import com.example.studyprojects.utils.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,8 +30,15 @@ public class ProjectThemesService {
         return repository.save(mapper.map(theme));
     }
 
-    public List<ProjectTheme> findAllThemes() {
-        return repository.findAll();
+    public List<ProjectTheme> findAllThemes(String sortBy, String group, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
+        return switch (group.toLowerCase()) {
+            case ("all") -> repository.findProjectThemesByAvailableIsTrue(pageRequest);
+            case ("is") -> repository.findProjectThemesByGroupAndAvailableIsTrue(Group.IS, pageRequest);
+            case ("isas") -> repository.findProjectThemesByGroupAndAvailableIsTrue(Group.ISAS, pageRequest);
+            case ("cs") -> repository.findProjectThemesByGroupAndAvailableIsTrue(Group.CS, pageRequest);
+            default -> throw new NotFoundException("Group with name '" + group.toUpperCase() + "' not found");
+        };
     }
 
     public List<ProjectTheme> findAllAvailableThemes() {

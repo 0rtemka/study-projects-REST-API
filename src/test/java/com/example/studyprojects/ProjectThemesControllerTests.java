@@ -47,7 +47,7 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemeByIdTest_ValidId_OK() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+        this.mock.perform(get("http://localhost:8080/api/themes/1").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -58,19 +58,19 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemeByIdTest_InvalidId_BAD_REQUEST() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/id/7").with(
+        this.mock.perform(get("http://localhost:8080/api/themes/7").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Project theme with id = 7 not found")))
                 .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes/id/7")));
+                .andExpect(jsonPath("$.path", is("/api/themes/7")));
     }
 
     @Test
     public void findThemesByGroupTest_IS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/is").with(
+        this.mock.perform(get("http://localhost:8080/api/themes?group=is").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -83,7 +83,7 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_ISAS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/isas").with(
+        this.mock.perform(get("http://localhost:8080/api/themes?group=isas").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -95,7 +95,7 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_CS() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/cs").with(
+        this.mock.perform(get("http://localhost:8080/api/themes?group=cs").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -106,14 +106,14 @@ public class ProjectThemesControllerTests {
 
     @Test
     public void findThemesByGroupTest_InvalidGroup_BAD_REQUEST() throws Exception {
-        this.mock.perform(get("http://localhost:8080/api/themes/css").with(
+        this.mock.perform(get("http://localhost:8080/api/themes?group=css").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Group with name 'CSS' not found")))
                 .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes/css")));
+                .andExpect(jsonPath("$.path", is("/api/themes")));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ProjectThemesControllerTests {
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/10").with(
+        this.mock.perform(get("http://localhost:8080/api/themes/10").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -191,7 +191,7 @@ public class ProjectThemesControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+        this.mock.perform(get("http://localhost:8080/api/themes/1").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
@@ -246,14 +246,14 @@ public class ProjectThemesControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        this.mock.perform(get("http://localhost:8080/api/themes/id/1").with(
+        this.mock.perform(get("http://localhost:8080/api/themes/1").with(
                         httpBasic(username, password)
                 ))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Project theme with id = 1 not found")))
                 .andExpect(jsonPath("$.status", is("BAD_REQUEST")))
-                .andExpect(jsonPath("$.path", is("/api/themes/id/1")));
+                .andExpect(jsonPath("$.path", is("/api/themes/1")));
     }
 
     @Test

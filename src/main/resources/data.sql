@@ -57,3 +57,33 @@ values (0, 'stud00000109@study.ru', 'ISAS', 'Sofia', '$2y$12$S9GcS0fWJCiBdFDIij8
 
 insert into student (mark, email, group_id, name, password, is_active, role)
 values (0, 'stud00003003@study.ru', 'CS', 'Hector', '$2y$12$S9GcS0fWJCiBdFDIij8ZLOJ4C5G8oCWqkw4PsyxKPFZ5dRm9gRPJa', 'true', 'USER');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'IS', 'true', 'Java NIO');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'ISAS', 'true', 'Python Multithreading');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'CS', 'true', 'Kotlin Kourutines');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'IS', 'true', 'Java Collections Framework');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'ISAS', 'true', 'Java Stream API');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'CS', 'true', 'Python JSON');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'IS', 'true', 'Java JSON');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'ISAS', 'true', 'Kotlin JSON');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'CS', 'true', 'Java Spring Framework');
+
+insert into project_theme (added_at, group_id, is_available, topic)
+values (CURRENT_DATE, 'IS', 'true', 'Python Django');

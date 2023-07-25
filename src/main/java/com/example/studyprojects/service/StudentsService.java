@@ -1,6 +1,5 @@
 package com.example.studyprojects.service;
 
-import com.example.studyprojects.dto.ProjectDto;
 import com.example.studyprojects.dto.StudentDto;
 import com.example.studyprojects.mapper.StudentMapper;
 import com.example.studyprojects.model.Group;
@@ -10,13 +9,12 @@ import com.example.studyprojects.model.Student;
 import com.example.studyprojects.repository.StudentsRepository;
 import com.example.studyprojects.utils.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -35,13 +33,12 @@ public class StudentsService {
 
     public List<Student> findAllStudentsSortAndPagination(String sortBy, int page, int size, String group) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
-
         return switch (group.toLowerCase()) {
             case ("all") -> studentsRepository.findAll(pageRequest).getContent();
             case ("is") -> studentsRepository.findAllByGroup(Group.IS, pageRequest);
             case ("isas") -> studentsRepository.findAllByGroup(Group.ISAS, pageRequest);
             case ("cs") -> studentsRepository.findAllByGroup(Group.CS, pageRequest);
-            default -> throw new NotFoundException("Group '" + group + "' not found");
+            default -> throw new NotFoundException("Group with name '" + group.toUpperCase() + "' not found");
         };
     }
 
@@ -102,7 +99,9 @@ public class StudentsService {
                 () -> new NotFoundException("User with id = " + id + " not found")
         );
 
-        return student.getProjects().stream().toList();
+        return student.getProjects().stream()
+                .filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now()) || p.getMark() != 0)
+                .toList();
 
     }
 }

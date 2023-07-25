@@ -24,22 +24,19 @@ public class ProjectThemesController {
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
     @GetMapping
-    public List<ProjectThemeDto> findAllThemes() {
-        return service.findAllAvailableThemes().stream()
+    public List<ProjectThemeDto> findAllThemes(
+            @RequestParam(name = "sortBy", required = false, defaultValue = "themeId") String sortBy,
+            @RequestParam(name = "group", required = false, defaultValue = "all") String group,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size)
+    {
+        return service.findAllThemes(sortBy, group, page, size).stream()
                 .map(mapper::map)
                 .toList();
     }
 
     @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
-    @GetMapping("/{group}")
-    public List<ProjectThemeDto> findThemesByGroup(@PathVariable String group) {
-        return service.findThemesByGroup(group).stream()
-                .map(mapper::map)
-                .toList();
-    }
-
-    @PreAuthorize("hasAuthority('PROJECT_THEMES_READ')")
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ProjectThemeDto findThemeById(@PathVariable int id) {
         return mapper.map(service.findThemeById(id));
     }
