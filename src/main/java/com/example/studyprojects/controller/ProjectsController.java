@@ -5,6 +5,7 @@ import com.example.studyprojects.mapper.ProjectMapper;
 import com.example.studyprojects.security.StudentDetails;
 import com.example.studyprojects.service.ProjectsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +19,19 @@ public class ProjectsController {
     private final ProjectsService projectsService;
     private final ProjectMapper mapper;
 
+    @PreAuthorize("hasAuthority('PROJECTS_READ')")
     @PostMapping("/{themeId}")
     public void takeProject(@PathVariable int themeId, @AuthenticationPrincipal StudentDetails student) {
         projectsService.takeProject(themeId, student.student());
     }
 
+    @PreAuthorize("hasAuthority('PROJECTS_WRITE')")
     @PutMapping("/{projectId}")
     public void rateProject(@PathVariable int projectId, @RequestBody ProjectDto projectDto) {
         projectsService.rateProject(projectDto.getMark(), projectId);
     }
 
+    @PreAuthorize("hasAuthority('PROJECTS_READ')")
     @GetMapping
     public List<ProjectDto> getAllProjects(
             @RequestParam(name = "status", required = false, defaultValue = "all") List<String> status,
@@ -41,11 +45,13 @@ public class ProjectsController {
                 .toList();
     }
 
+    @PreAuthorize("hasAuthority('PROJECTS_READ')")
     @GetMapping("/{id}")
     public ProjectDto getProjectById(@PathVariable int id) {
         return mapper.map(projectsService.getProjectById(id));
     }
 
+    @PreAuthorize("hasAuthority('PROJECTS_WRITE')")
     @DeleteMapping("/{id}")
     public void deleteProject(@PathVariable int id) {
         projectsService.deleteProject(id);
