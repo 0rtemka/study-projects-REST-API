@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,14 +96,46 @@ public class StudentsService {
         );
     }
 
-    public List<Project> getStudentsProjects(int id) {
+    public Set<Project> getStudentsProjects(int id, List<String> status, int page, int size) {
         Student student = studentsRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("User with id = " + id + " not found")
         );
-
-        return student.getProjects().stream()
-                .filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now()) || p.getMark() != 0)
-                .toList();
-
+        Set<Project> projects = student.getProjects();
+        for (String filter : status) {
+            projects = switch (filter.toUpperCase()) {
+                case "ALL" ->
+                        projects.stream()
+                                .skip((long) page * size)
+                                .limit(size)
+                                .collect(Collectors.toSet());
+                case "MARKED" ->
+                        projects.stream()
+                                .filter(p -> p.getMark() != 0)
+                                .skip((long) page * size)
+                                .limit(size)
+                                .collect(Collectors.toSet());
+                case "UNMARKED" ->
+                        projects.stream()
+                                .filter(p -> p.getMark() == 0)
+                                .skip((long) page * size)
+                                .limit(size)
+                                .collect(Collectors.toSet());
+                case "ACTIVE" ->
+                        projects.stream()
+                                .filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now()))
+                                .skip((long) page * size)
+                                .limit(size)
+                                .collect(Collectors.toSet());
+                case "INACTIVE" ->
+                        projects.stream()
+                                .filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now()))
+                                .skip((long) page * size)
+                                .limit(size)
+                                .collect(Collectors.toSet());
+                default ->
+                        throw new NotFoundException("Illegal status: " + status);
+            };
+        }
+        return projects;
     }
 }

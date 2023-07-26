@@ -64,8 +64,13 @@ public class StudentsController {
     }
 
     @GetMapping("/{id}/projects")
-    public List<ProjectDto> getStudentsProjects(@PathVariable int id) {
-        return studentsService.getStudentsProjects(id).stream()
+    public List<ProjectDto> getStudentsProjects(
+            @PathVariable int id,
+            @RequestParam(name = "status", required = false, defaultValue = "all") List<String> status,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size)
+    {
+        return studentsService.getStudentsProjects(id, status, page, size).stream()
                 .map(projectMapper::map)
                 .toList();
     }
