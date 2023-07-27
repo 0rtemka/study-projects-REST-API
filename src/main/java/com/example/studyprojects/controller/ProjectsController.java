@@ -4,9 +4,14 @@ import com.example.studyprojects.dto.ProjectDto;
 import com.example.studyprojects.mapper.ProjectMapper;
 import com.example.studyprojects.security.StudentDetails;
 import com.example.studyprojects.service.ProjectsService;
+import com.example.studyprojects.utils.ApiError;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +32,10 @@ public class ProjectsController {
 
     @PreAuthorize("hasAuthority('PROJECTS_WRITE')")
     @PutMapping("/{projectId}")
-    public void rateProject(@PathVariable int projectId, @RequestBody ProjectDto projectDto) {
-        projectsService.rateProject(projectDto.getMark(), projectId);
+    public ResponseEntity<Object> rateProject(@PathVariable int projectId, @RequestBody @Valid ProjectDto projectDto, Errors errors) {
+        if (errors.hasErrors())
+            return new ResponseEntity<>(new ApiError(errors, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(projectsService.rateProject(projectDto.getMark(), projectId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('PROJECTS_READ')")

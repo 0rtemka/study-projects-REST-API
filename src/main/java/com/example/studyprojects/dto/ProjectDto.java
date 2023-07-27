@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,13 +21,11 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProjectDto {
     private int projectId;
-    @NotBlank(message = "Topic should not be blank")
     private String topic;
     private LocalDateTime takenAt;
     private LocalDateTime expiresAt;
     @Min(value = 1, message = "Mark cannot be less than 1")
     @Max(value = 15, message = "Mark cannot be greater than 15")
-    @NotBlank(message = "Mark cannot be blank")
     private int mark;
     private Group groupId;
     private Set<StudentDto> group = new HashSet<>();

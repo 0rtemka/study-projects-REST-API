@@ -62,7 +62,7 @@ public class ProjectThemesService {
 
     public ProjectTheme findAvailableThemeById(int id) {
         return repository.findByThemeIdAndAvailableIsTrue(id).orElseThrow(
-                () -> new NotFoundException("Project theme with id = " + id + " not found")
+                () -> new NotFoundException("Project theme with id = " + id + " not found or unavailable")
         );
     }
 

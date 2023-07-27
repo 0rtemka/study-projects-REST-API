@@ -3,6 +3,7 @@ package com.example.studyprojects.repository;
 import com.example.studyprojects.model.Group;
 import com.example.studyprojects.model.Project;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -17,4 +18,6 @@ public interface ProjectsRepository extends JpaRepository<Project, Integer> {
     List<Project> findAllByExpiresAtAfter(LocalDateTime time);
 
     List<Project> findAllByGroupId(Group group, PageRequest pageRequest);
+
+    List<Project> findAllByGroupId(Group group, Sort sort);
 }

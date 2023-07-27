@@ -65,7 +65,7 @@ insert into project_theme (added_at, group_id, is_available, topic)
 values (CURRENT_DATE, 'ISAS', 'true', 'Python Multithreading');
 
 insert into project_theme (added_at, group_id, is_available, topic)
-values (CURRENT_DATE, 'CS', 'true', 'Kotlin Kourutines');
+values (CURRENT_DATE, 'CS', 'true', 'Kotlin Coroutines');
 
 insert into project_theme (added_at, group_id, is_available, topic)
 values (CURRENT_DATE, 'IS', 'true', 'Java Collections Framework');

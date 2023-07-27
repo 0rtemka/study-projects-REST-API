@@ -8,6 +8,7 @@ build/
 #for development
 src/main/resources/application-dev.yaml
 src/main/resources/application-test.yaml
+src/main/resources/data.sql
 
 ### STS ###
 .apt_generated

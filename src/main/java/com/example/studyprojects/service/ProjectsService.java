@@ -9,7 +9,6 @@ import com.example.studyprojects.utils.NotFoundException;
 import com.example.studyprojects.utils.TakeProjectException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,28 +56,51 @@ public class ProjectsService {
     @Transactional(readOnly = true)
     public Project getProjectById(int id) {
         return projectsRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Project with id " + id + " not found")
+                () -> new NotFoundException("Project with id = " + id + " not found")
         );
     }
 
     @Transactional(readOnly = true)
     public List<Project> getAllProjects(String sortBy, String group, int page, int size, List<String> status) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy));
-        List<Project> projects = switch(group.toLowerCase()) {
-            case "all" -> projectsRepository.findAll(pageRequest).getContent();
-            case "is" -> projectsRepository.findAllByGroupId(Group.IS, pageRequest);
-            case "isas" -> projectsRepository.findAllByGroupId(Group.ISAS, pageRequest);
-            case "cs" -> projectsRepository.findAllByGroupId(Group.CS, pageRequest);
+        List<Project> projects = switch(group.toUpperCase()) {
+            case "ALL" -> projectsRepository.findAll(Sort.by(sortBy));
+            case "IS" -> projectsRepository.findAllByGroupId(Group.IS, Sort.by(sortBy));
+            case "ISAS" -> projectsRepository.findAllByGroupId(Group.ISAS, Sort.by(sortBy));
+            case "CS" -> projectsRepository.findAllByGroupId(Group.CS, Sort.by(sortBy));
             default -> throw new NotFoundException("Group with name '" + group.toUpperCase() + "' not found");
         };
 
         for (String filter : status) {
             projects = switch (filter.toUpperCase()) {
-                case "ALL" -> projects;
-                case "MARKED" -> projects.stream().filter(p -> p.getMark() != 0).toList();
-                case "UNMARKED" -> projects.stream().filter(p -> p.getMark() == 0).toList();
-                case "ACTIVE" -> projects.stream().filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now())).toList();
-                case "INACTIVE" -> projects.stream().filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now())).toList();
+                case "ALL" ->
+                        projects.stream()
+                                .skip((long) page * size)
+                                .limit(size)
+                                .toList();
+                case "MARKED" ->
+                        projects.stream()
+                                .filter(p -> p.getMark() != 0)
+                                .skip((long) page * size)
+                                .limit(size)
+                                .toList();
+                case "UNMARKED" ->
+                        projects.stream()
+                                .filter(p -> p.getMark() == 0)
+                                .skip((long) page * size)
+                                .limit(size)
+                                .toList();
+                case "ACTIVE" ->
+                        projects.stream()
+                                .filter(p -> p.getExpiresAt().isAfter(LocalDateTime.now()))
+                                .skip((long) page * size)
+                                .limit(size)
+                                .toList();
+                case "INACTIVE" ->
+                        projects.stream()
+                                .filter(p -> p.getExpiresAt().isBefore(LocalDateTime.now()))
+                                .skip((long) page * size)
+                                .limit(size)
+                                .toList();
                 default -> throw new NotFoundException("Illegal status: " + filter);
             };
         }
@@ -112,7 +134,7 @@ public class ProjectsService {
     }
 
     @Transactional
-    public void rateProject(int mark, int projectId) {
+    public Project rateProject(int mark, int projectId) {
         Project project = projectsRepository.findById(projectId).orElseThrow(
                 () -> new NotFoundException("Project with id = " + projectId + " not found")
         );
@@ -127,5 +149,6 @@ public class ProjectsService {
         project.setMark(mark);
 
         projectsRepository.save(project);
+        return project;
     }
 }
