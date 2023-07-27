@@ -5,6 +5,6 @@ spring:
     password:
 
   jpa:
-    database:
+    database: postgresql
     hibernate:
       ddl-auto: create
